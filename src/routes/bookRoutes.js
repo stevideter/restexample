@@ -67,6 +67,15 @@ var routes = function () {
                     res.json(result);
                 }
             });
+        })
+        .delete(function(req, res) {
+            req.book.remove(function(err, result) {
+                if (err) {
+                    res.status(404).json({error: 'error deleting ' + err});
+                } else {
+                    res.status(204).send();
+                }
+            });
         });
 
     return bookRouter;
