@@ -24,16 +24,51 @@ var routes = function () {
 
             });
         });
-    bookRouter.route('/books/:bookId')
+    bookRouter.use('/:bookId', function (req, res, next) {
+        Book.findById(req.params.bookId, function (err, book) {
+            if (err) {
+                res.status(500).json({error: err});
+            } else if (!book) {
+                res.status(404).json({error: 'book not found'});
+            } else {
+                req.book = book;
+                next();
+            }
+        });
+    });
+    bookRouter.route('/:bookId')
         .get(function (req, res) {
-            Book.findById(req.params.bookId, function (err, book) {
+            res.json(req.book);
+        })
+        .put(function (req, res) {
+            var book = req.book;
+            book.title = req.body.title;
+            book.author = req.body.author;
+            book.genre = req.body.genre;
+            book.read = req.body.read;
+            book.save(function(err, result) {
                 if (err) {
-                    res.status(500).json({error: err});
+                    res.status(404).json({error: 'error saving ' + err});
                 } else {
-                    res.json(book);
+                    res.json(result);
+                }
+            });
+        })
+        .patch(function(req, res) {
+            for (var p in req.body) {
+                if (p !== '_id') {
+                    req.book[p] = req.body[p];
+                }
+            }
+            req.book.save(function(err, result) {
+                if (err) {
+                    res.status(404).json({error: 'error saving ' + err});
+                } else {
+                    res.json(result);
                 }
             });
         });
+
     return bookRouter;
 };
 
