@@ -1,7 +1,6 @@
 var express = require('express');
-var Book = require('../models/bookModel');
 
-var routes = function () {
+var routes = function (Book) {
     var bookRouter = express.Router();
     var bookController = require('../controllers/bookController')(Book);
     bookRouter.route('/')
