@@ -20,7 +20,12 @@ var routes = function (Book) {
     });
     bookRouter.route('/:bookId')
         .get(function (req, res) {
-            res.json(req.book);
+            var book = req.book.toJSON();
+            book.links = {
+                self: 'http://' + req.headers.host + '/api/books/' + book._id,
+                filterByThisGenre: 'http://' + req.headers.host + '/api/books/?genre=' + encodeURIComponent(book.genre)
+            };
+            res.json(book);
         })
         .put(function (req, res) {
             var book = req.book;
